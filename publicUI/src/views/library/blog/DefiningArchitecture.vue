@@ -1,0 +1,178 @@
+<template>
+  <panel header="Defining Architecture">
+    <div class="text-container">
+      <p>
+        I’ve been a practicing architect (in one way or another) for over 20 years. But “architecture” is notoriously hard
+        to define – there are dozens of “architectures” and “architects” in any large system. Surely these must have a
+        common thread – some way of talking about all these architectures in a common way – but we have to define what
+        that is.
+      </p>
+      <p>
+        What I’ve came to realize – slowly over time – is this fundamental question of what we do is not commonly asked.
+        Most architecture methodologies talk about the how – how to create models, how to document systems – and sometimes
+        the what – whether that’s people, processes and things or entities and relationships – but not the why of
+        architecture. Why is architecture important, why does it have a role to play, and why should it be a part of our
+        project plans.
+      </p>
+      <p>
+        What is architecture in the first place?
+      </p>
+      <p>
+        I started thinking a lot about this question a year or so ago. Embarrassingly, after 20 some years of being “an
+        architect” I didn’t have a clean, concise definition of what architecture was. I didn’t have that “elevator pitch”
+        I could use with an executive who asked what I did for the company. I certainly didn’t have an answer for my
+        grandmother at Thanksgiving – at 102 years old, telling her I “made the world a better place through elegant
+        hierarchies for maximum code reuse and extensibility” was about as meaningful as reciting “The Jabberwocky”, and a
+        good deal less satisfying.
+      </p>
+      <p>
+        I believe in architecture. I have been an architect most of my adult life, and I firmly believe is is critical to
+        any organization or system of reasonable size. I like to think I can do architecture and be an architect – but I
+        had to face that hard realization that no professional can be successful if it cannot sell itself to others. There
+        had to be a way of explaining what I did, and why what I did was important, to people who hadn’t spend years of
+        their lives studying UML, TOGAF, or any other approach to architecture.
+      </p>
+      <p>
+        I also came to realize that I had to stop thinking like a technologist. The reality is that we are part of a
+        business. I had to articulate what my profession did for the business; how it advanced our corporate mission in a
+        way business people could relate to. The hard reality is that something that is poorly understood is seen as an
+        overhead at best and unnecessary at worst and probably is. If architecture didn’t have a business function to
+        fulfill and fulfill in a unique way that no other part of the business could, then yes, it probably is overhead
+        and probably should be eliminated.
+      </p>
+      <p>
+        The good news, though, is that architect does have that business function and more interestingly it can be
+        summarized in a single phrase for all aspects of architecture.
+      </p>
+      <p>
+        Quality Risks
+        I came to the conclusion that architecture controls against quality risks to a system. OK, maybe that’s not much
+        better than “The Jabberwocky”, but it’s a starting point. It does make a couple things clear right off the bat. It
+        makes clear that architecture doesn’t deal with functionality per se. As an architect, I’m not defining what the
+        system does, I am defining how it does it. Functionality – what the customers get for using a system – is the
+        purview of product management. They talk with customers, decide what customers need, and ruthlessly define the
+        timelines against which to deliver those features to the customer – after all, customers are notoriously ADHD and
+        will wander off into the wilderness of competitive products if we don’t constantly keep their attention. We, the
+        architects and engineers, have to deliver those timelines – and make sure we don’t break anything in the process.
+      </p>
+      <p>
+        It’s the not breaking things that has always fascinated me. It’s one thing to make a program work. It’s another
+        thing completely to make it work relentlessly – every single time the customer makes a request, in a matter of
+        milliseconds, millions of times a day, all while making sure no data is lost, corrupted, or accidentally
+        disclosed. Building and reinforcing our customers’ trust.
+      </p>
+      <p>
+        This crystalized as the essence of architecture for me. Product management defined what the system did.
+        Engineering make sure it was implemented correctly. Architecture – my long undefined career – made sure the
+        engineers knew what “correctly” meant, thinking of all the details that might go wrong and putting a plan in place
+        to make sure that those conditions didn’t arise or were caught and corrected when they did, so that the customer
+        could have a relentlessly enjoyable experience with the system.
+      </p>
+      <p>
+        Of course, this definition has at least two problems. First, it could be too ivory tower – on the surface it’s
+        somewhat hard to reconcile architectures like Lambda or Hadoop with “controls against quality risks”. Second, it
+        uses a bunch of words that aren’t obviously defined: control, quality risk, and system. So in order to make this
+        usable, let’s first get precise about these terms. Then we can get back to the question of whether this even makes
+        sense in the first place. If it doesn’t – and, spoiler alert: I think it does – at least we’ll have the
+        satisfaction of defining a couple terms. Defining precise terms is something I’ve always found architects to
+        enjoy.
+      </p>
+      <p>
+        System
+        Let’s start with the easy one: system. A quick web search defines “system” as ”a set of connected things or parts
+        forming a complex whole”. At least intuitively that makes sense. The more complicated our software and hardware
+        environment gets, the more we need “architecture” and the more we worry about how the parts fit together.
+      </p>
+      <p>
+        In our world those components can be a number of different things. They could be services as part of service
+        oriented architecture. They could be networking, storage and compute equipment in our data centers, colos, or the
+        cloud. The might be brands or subsidiary companies. The types of components determine the type of architecture
+        (application architecture, network and data center architecture, and so forth). But in all cases we need a
+        collection of connected, interoperating components in order to make architecture interesting; if your application
+        can be written in a single Python module you might not have to think much about architecture at all.
+      </p>
+      <p>
+        There also needs to be a common purpose to the system. Whether that’s routing data packets to processing units, or
+        providing a merchant with a means to obtain checkout services, or just entertaining a kid by ringing bells with
+        balls moving on wire tracks, the system needs to work toward a common goal. Just having a random collection of
+        disconnected components doesn’t cut it – there needs to be some sense of order and purpose and integration between
+        the components as well.
+      </p>
+      <p>
+        So a system is a complex, interconnected set of components all working to achieve a common goal.
+      </p>
+      <p>
+        Quality Risk
+        “Quality Risk” is a bit trickier. What is ”quality” in the first place? “Quality” has a couple meanings in
+        English; it can be “the degree of excellence of something” – how good or bad that something is when compared to
+        other things of a similar kind. It can also be “a distinct attribute or characteristic” – for example, a
+        leadership quality or that “indescribable quality that makes someone a star”. Of these definitions, we’re talking
+        about the former: a measurement of how well something measures against a stated objective. It’s confusing because
+        we sometimes talk about the “system qualities” meaning the second definition, as opposed to the “system quality”
+        meaning the first. English is lovely sometimes.
+      </p>
+      <p>
+        It’s important to notice that this almost always means a non-functional characteristic of a system. We don’t
+        really speak about how well a system measures against the stated business objective; it either meets the
+        objective, or it doesn’t. We can build an absolutely fabulous system for selling buggy whips, and probably still
+        have a business failure even though the system quality was very high. This goes back to the discussion on product
+        owners; they have to make sure that someone really wants the system in the first place. Our job as architects is
+        to make sure it’s high quality if they do.
+      </p>
+      <p>
+        We’ll talk more about this another time, but architecture quality can’t be subjective. “Quality” isn’t like
+        “beauty”; it can’t be in the eye of the beholder. We need some way of specifying what our quality target is in
+        clear, objective language. Something like “we will respond to the user within 300ms”. That’s pretty clear, and
+        easy to measure. It also doesn’t say anything about how secure our response will be, or how much it will cost us
+        to make that response. So we’ll have to have targets for those as well, and a dozen other things that make up the
+        quality of our system.
+      </p>
+      <p>
+        The risk, then is that we state we’ll make a certain measure and not actually make is. Maybe we respond in 301ms
+        instead – not such a big deal. 3000ms, on the hand, could be and 30000ms definitely is. A quality risk, then is
+        the risk that we might not make the target or, more precisely, that we’ll miss the target by a noticeable amount.
+        That’s really what architecture focuses on; risks that systems won’t meet non-functional targets by a noticeable
+        amount.
+      </p>
+      <p>
+        Control
+        That brings us to “control”. Since we’re taking about quality risks, it makes sense to talk about “control” in the
+        language of risk management. A control in risk management lingo is “the policy or procedure by which potential
+        risks are evaluated, reduced, or eliminated”. Controls are born out of thinking about what could go wrong,
+        planning for what to do if they do go wrong, and planning on how to prevent them from going wrong in the first
+        place.
+      </p>
+      <p>
+        You’ll hear architects talking about the ”guardrails” of a system. That’s basically an informal way of saying
+        ”control”. By putting in place a guardrail – which is to say by specifying a policy or procedures that we expect
+        to be followed – we are creating an expectation of how the system will be designed in order to meet a set of
+        quality goals. The controls don’t tell us exactly how to write a system, but they do keep us within a certain set
+        of safe boundaries. A guardrail doesn’t tell us how to drive; it just tells us that straying too far from a
+        certain path could be dangerous.
+      </p>
+      <p>
+        Note also that the controls don’t say anything about what the system does. Guardrails keep you on the road, but
+        don’t tell you where you’re going, or why you want to be there. Again the distinction between product management,
+        and architecture.
+      </p>
+      <p>
+        So now we can go back to the definition. Architecture is the result of someone thinking about what the desired
+        characteristics of a system are, how to set a target for those characteristics, how to measure the actual system
+        performance, and what policies and procedures to put in place to make achieving the target as likely as possible.
+        We call those targets SLAs; we call those policies and procedures ”architecture”, and we call that someone an
+        architect.
+      </p>
+    </div>
+  </panel>
+</template>
+
+<script>
+
+export default {
+  name: "DefiningArchitecture"
+}
+</script>
+
+<style scoped>
+
+</style>

@@ -1,6 +1,2 @@
-# Jutzo
-A lightweight content management system gears toward architects.
-
-This is the root monorepo. The individual trees are:
-- clientUI    The public client facing (readonly) site (Vue3/JS)
-- api         The backend services (go)
+This branch of the repo is the code for the client UI. This is the general public
+UI, not the administrative one.
