@@ -4,7 +4,7 @@
               :autoplayInterval="3000"
               :circular="entries.length > 3" class="custom-carousel">
       <template #header>
-        <h2>Newest Blog Entries</h2>
+        <h2>{{header}}</h2>
       </template>
       <template #item="slotProps">
         <div class="blog-entry">
@@ -29,6 +29,7 @@ export default {
   name: "LibraryBlogNewest",
   data() {
     return {
+      header: 'Loading blog entries from api.hablutzel.com...',
       entries: [],
       responsiveOptions: [
         {
@@ -52,6 +53,7 @@ export default {
   mounted() {
     retrieveNewest((entries) => {
       this.entries = entries
+      this.header = 'Newest Blog Entries'
 
       // The carousel misbehaves if the number of entries
       // is less than the numVisible. So in this case we
