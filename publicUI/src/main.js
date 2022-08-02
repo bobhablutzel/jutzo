@@ -2,7 +2,7 @@
 import {createApp} from 'vue'
 import App from './App.vue'
 import PrimeVue from 'primevue/config'
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 import 'primevue/resources/primevue.css'
 import './assets/theme.css'
 import 'primeicons/primeicons.css'
@@ -71,7 +71,7 @@ app.component("Carousel", Carousel)
 
 // Create our routes
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         { path: '/', name: 'Home', component: Home },
         { path: '/about', name: 'About', component: About },
