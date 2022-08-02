@@ -13,6 +13,8 @@
 <script>
 
 
+import {fetchData} from "@/services/fetch.js";
+
 export default {
   name: 'App',
   data() {
@@ -30,6 +32,13 @@ export default {
       ]
     }
   },
+  mounted() {
+    fetchData(`${process.env.VUE_APP_API_URL}ping`, (data, error) => {
+      if (error) {
+        alert("Warning: either api.hablutzel.com is down, or you don't have access to it. Some parts of this site will not work properly" )
+      }
+    })
+  }
 }
 </script>
 

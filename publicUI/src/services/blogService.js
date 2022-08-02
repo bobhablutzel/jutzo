@@ -1,8 +1,8 @@
-import {fetchData} from "@/services/fetchData";
+import {fetchJSON} from "@/services/fetch.js";
 
 function retrieveBlogEntry(id, blogEntrySetter) {
     const blogURL = `${process.env.VUE_APP_API_URL}blog/entry/${id}`
-    fetchData(blogURL,(data, error) => {
+    fetchJSON(blogURL,(data, error) => {
             blogEntrySetter( error ? buildErrorEntry(error) : data)
         }
     )
@@ -10,7 +10,7 @@ function retrieveBlogEntry(id, blogEntrySetter) {
 
 function retrieveNewest( setter ) {
     const newestURL = `${process.env.VUE_APP_API_URL}blog/newest`
-    fetchData(newestURL, (data, error ) => {
+    fetchJSON(newestURL, (data, error ) => {
         setter( error ? buildErrorEntry(error) : data )
     })
 }
