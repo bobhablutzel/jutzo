@@ -21,7 +21,6 @@ export default {
     return {
       items: [
         { label:'Home', to: {name: 'Home' }},
-        { label:'Academy', to: {name: 'AcademyOverview' }},
         { label:'Framework', to: {name: 'FrameworkIntroduction'}},
         { label:'Library', to: {name: 'LibraryOverview'}}
       ],

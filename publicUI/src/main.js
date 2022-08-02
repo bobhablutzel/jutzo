@@ -102,23 +102,23 @@ const router = createRouter({
                 { path: '', name: 'LibraryOverview', component: LibraryOverview },
                 { path: 'blog', name: 'LibraryBlog', component: LibraryBlogNewest},
                 { path: 'blog/entry/:id', name: 'LibraryBlogEntry', component: LibraryBlogEntry},
+                { path: 'arsciv', name: 'ARSCIV_X', component: ARSCIVX,
+                    children: [
+                        { path: '', name: 'ARSCIV_X_Overview', component: ARSCIVXOverview },
+                        { path: 'roles', name: 'ARSCIV_X_Roles', component: ARSCIVXRoles },
+                        { path: 'discussion', name: 'ARSCIV_X_Discussion', component: ARSCIVXDiscussion },
+                        { path: 'examples', name: 'ARSCIV_X_Examples', component: ARSCIVXExamples }
+                    ]
+                },
+                { path: 'jd', name: 'JobDescriptions', component: JobDescriptions,
+                    children: [
+                        { path: '', name: 'JobDescriptionList', component: JobDescriptionList },
+                        { path: 'chiefArch', name: 'ChiefArchitectJD', component: ChiefArchitectJD }
+                    ]
+                },
                 {
                     path: 'reference', name: 'LibraryReferenceMaterial', component: LibraryReferenceMaterial,
                     children: [
-                        { path: 'arsciv', name: 'ARSCIV_X', component: ARSCIVX,
-                            children: [
-                                { path: '', name: 'ARSCIV_X_Overview', component: ARSCIVXOverview },
-                                { path: 'roles', name: 'ARSCIV_X_Roles', component: ARSCIVXRoles },
-                                { path: 'discussion', name: 'ARSCIV_X_Discussion', component: ARSCIVXDiscussion },
-                                { path: 'examples', name: 'ARSCIV_X_Examples', component: ARSCIVXExamples }
-                            ]
-                        },
-                        { path: 'jd', name: 'JobDescriptions', component: JobDescriptions,
-                            children: [
-                                { path: '', name: 'JobDescriptionList', component: JobDescriptionList },
-                                { path: 'chiefArch', name: 'ChiefArchitectJD', component: ChiefArchitectJD }
-                            ]
-                        },
 
                     ]
                 },

@@ -17,6 +17,11 @@ export default {
         topics: [
           { label: 'Overview', to: {name: 'LibraryOverview'}},
           { label: 'Blog', to: {name: 'LibraryBlog'}, items: []},
+          { label: 'ARSCIV-X', to: { name: 'ARSCIV_X_Overview' }, items: [
+              { label: 'Roles', to: { name: 'ARSCIV_X_Roles' }},
+              { label: 'Discussion', to: { name: 'ARSCIV_X_Discussion' }},
+              { label: 'Examples', to: { name: 'ARSCIV_X_Examples' }},
+            ] },
           { label: 'Job Descriptions', to: {name: 'JobDescriptionList'}, items: [
               {label: 'Chief Architect', to: {name: 'ChiefArchitectJD'}},
             ]

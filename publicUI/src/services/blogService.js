@@ -16,13 +16,13 @@ function retrieveNewest( setter ) {
 }
 
 function buildErrorEntry(error) {
-    return {
+    return [ {
         title: 'An error occurred',
         body: [ { text: error.message } ],
         teaser: error.message,
         id: '00000000-0000-0000-0000-00000000000',
-        publicationDate: Date.now()
-    }
+        publicationDate: new Date().toISOString()
+    } ]
 }
 
 

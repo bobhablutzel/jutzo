@@ -14,11 +14,13 @@ export function fetchJSON(url, callback) {
             if (!res.ok) {
                 // create error instance with HTTP status text
                 const error = new Error(res.statusText);
-                error.json = res.json();
                 callback(null, error)
             } else {
                 res.json().then(json => {
                     callback(json, null)
+                })
+                .catch((error) => {
+                    callback(null, error)
                 })
             }
         })
@@ -36,9 +38,6 @@ export function fetchJSON(url, callback) {
 export function fetchData(url, callback) {
     fetch(url, {
         method: 'GET',
-        headers: {
-            'content-type': 'application/json'
-        }
     })
         .then(res => {
             // a non-200 response code
@@ -49,6 +48,9 @@ export function fetchData(url, callback) {
             } else {
                 res.blob().then(blob => {
                     callback(blob, null)
+                })
+                .catch((error) => {
+                    callback(null, error)
                 })
             }
         })
