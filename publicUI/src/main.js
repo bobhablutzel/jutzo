@@ -128,6 +128,10 @@ const router = createRouter({
     ],
 })
 
+router.beforeEach( (to) => {
+    console.log( to.path )
+})
+
 app.use(router)
 
 
