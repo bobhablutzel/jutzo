@@ -15,7 +15,7 @@ func setupRouter() *gin.Engine {
 	// gin.DisableConsoleColor()
 	router := gin.Default()
 
-	// If we're in production, then were going to use
+	// If we are in production, then use
 	// the trusted cloudflare platform
 	if gin.Mode() == gin.ReleaseMode {
 		router.TrustedPlatform = gin.PlatformCloudflare
