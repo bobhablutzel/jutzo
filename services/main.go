@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"os"
 )
 
 var db = make(map[string]string)
@@ -12,6 +14,13 @@ func setupRouter() *gin.Engine {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
 	router := gin.Default()
+
+	// If we're in production, then were going to use
+	// the trusted cloudflare platform
+	if gin.Mode() == gin.ReleaseMode {
+		router.TrustedPlatform = gin.PlatformCloudflare
+	}
+
 	// Set up CORS middleware options
 	router.Use(cors.Default())
 
@@ -75,6 +84,14 @@ func setupRouter() *gin.Engine {
 
 func main() {
 	router := setupRouter()
-	// Listen and Server in 0.0.0.0:8081
-	router.Run(":8081")
+
+	// Get the port from the ENV variable (if any)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+	log.Printf("Using port %s\n", port)
+	if err := router.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
+	}
 }
