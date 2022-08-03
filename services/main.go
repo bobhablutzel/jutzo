@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"os"
 )
 
 var db = make(map[string]string)
@@ -84,14 +83,7 @@ func setupRouter() *gin.Engine {
 
 func main() {
 	router := setupRouter()
-
-	// Get the port from the ENV variable (if any)
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8081"
-	}
-	log.Printf("Using port %s\n", port)
-	if err := router.Run(":" + port); err != nil {
+	if err := router.Run(); err != nil {
 		log.Panicf("error: %s", err)
 	}
 }
