@@ -39,14 +39,10 @@ func initToken() error {
 		redisConnectionString := getRequiredConfigString("JUTZO_REDIS_URL")
 		if parsed, err := url.Parse(redisConnectionString); err == nil {
 			if parsed.Scheme == "redis" {
-				port := parsed.Port()
-				if port == "" {
-					port = "6379"
-				}
-				password, _ := parsed.User.Password()
 
+				password, _ := parsed.User.Password()
 				redisClient = redis.NewClient(&redis.Options{
-					Addr:     fmt.Sprintf("%s:%s", parsed.Host, port),
+					Addr:     parsed.Host,
 					Password: password,
 					DB:       0,
 				})
