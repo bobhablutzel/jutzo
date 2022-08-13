@@ -34,7 +34,7 @@ services:
     rootDir: publicUI
     buildCommand: npm run build
     staticPublishPath: dist
-    domains: hablutzel.com
+    domains: [hablutzel.com]
     envVars:
       - key: VUE_APP_API_URL
         value: https://api.hablutzel.com/
