@@ -139,6 +139,7 @@ func getDatabaseVersionFromDatabase(db *sql.DB) (int, error) {
 		}
 	} else {
 		// Database just doesn't exist - so let's create it.
+		log.Printf("Marking that the database is not populated")
 		return UnpopulatedDatabase, nil
 	}
 

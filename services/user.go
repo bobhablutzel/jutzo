@@ -22,9 +22,18 @@ func checkIfEmailIsInDatabase(db *sql.DB, email string) (bool, error) {
 	return checkForUniqueRow(db, "select count(*) from jutzo_registered_user where email = $1", email)
 }
 
-// Ensure there is at least one administrative user in the database
+// Ensure there is at least one administrative user in the database. Force it if we need to.
 func ensureAdministrativeUser(db *sql.DB) (bool, error) {
-	return checkForAtLeastOneRow(db, `select count(*) from jutzo_registered_user where rights like '%admin%'`)
+	exists, err := checkForAtLeastOneRow(db, `select count(*) from jutzo_registered_user where rights like '%admin%'`)
+	if err != nil {
+		return false, err
+	} else {
+		if !exists {
+			return true, forceRegisterAdminUser(db)
+		} else {
+			return true, nil
+		}
+	}
 }
 
 // Routine to register a new user in the database
