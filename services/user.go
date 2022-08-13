@@ -63,6 +63,27 @@ func registerUser(db *sql.DB, user string, password string, email string) (int, 
 	}
 }
 
+func forceRegisterAdminUser(db *sql.DB) error {
+
+	// Register the admin user
+	user := getRequiredConfigString("JUTZO_ADMIN_USER")
+	_, err := registerUser(db,
+		user,
+		getRequiredConfigString("JUTZO_ADMIN_PASS"),
+		getRequiredConfigString("JUTZO_ADMIN_EMAIL"))
+	if err == nil {
+		log.Printf("Making %s an administrator", user)
+		// Update the admin user to show that it's valid and an administrator
+		sqlStatement := `update jutzo_registered_user 
+                            set email_validated = true,
+                                rights = 'admin'
+                         where username = $1`
+		_, err = db.Exec(sqlStatement, user)
+	}
+	return err
+
+}
+
 // Actually insert a user into the database. This will
 // hash the password, insert the user, and trigger the
 // email validation routine.
@@ -83,9 +104,9 @@ func insertUser(db *sql.DB, user string, pass string, email string) error {
 	} else {
 
 		// Now we can insert the user into the registered user table
-		sqlStatement := "insert into jutzo_registered_user" +
-			" (username, email, password_cost, password_hash)" +
-			" values ($1, $2, $3, $4)"
+		sqlStatement := `insert into jutzo_registered_user
+                                     (username, email, password_cost, password_hash)
+                         values ($1, $2, $3, $4)`
 		_, err := db.Exec(sqlStatement, user, email, cost, bytes)
 		return err
 	}

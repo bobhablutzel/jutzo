@@ -14,7 +14,11 @@ Environment variables:
   given environment
 - **JUTZO_REDIS_URL** [required]: a Redis connection url in the format redis://
 
+- **JUTZO_ADMIN_USER** [required for first run]: The administrative username
+- **JUTZO_ADMIN_PASS** [required for first run]: The administrative password
+- **JUTZO_ADMIN_EMAIL** [required for first run]: The administrative email
+
 - **JUTZO_SERVER_PORT** [optional, default 8080]: The port number to listen on
 - **JUTZO_HASH_COST** [optional, default 15]: The bcrypt password hashing cost. Larger values will impact login performance.
-
+- **GIN_MODE** [optional]: Set to "release" in production environment
 

@@ -9,6 +9,7 @@ import (
 	"reflect"
 )
 
+const UnpopulatedDatabase = -1
 const InvalidDatabase = -2
 
 type columnDesc map[string]string
@@ -50,6 +51,8 @@ func connectToDatabase(initDB bool, forceInit bool) (*sql.DB, error) {
 			shutdownDatabase(db)
 			return nil, err
 		}
+	} else if currentSchemaVersion == UnpopulatedDatabase {
+		return db, recreateDatabase(db, true)
 	} else if isKnownSchema(currentSchemaVersion) {
 		return db, nil
 	} else {
@@ -70,7 +73,9 @@ func doRecreationDDL(db *sql.DB) error {
 			return err
 		}
 	}
-	return nil
+
+	currentSchemaVersion = schemaV1
+	return forceRegisterAdminUser(db)
 }
 
 // Used to recreate the database when there is a schema mismatch.
@@ -133,7 +138,8 @@ func getDatabaseVersionFromDatabase(db *sql.DB) (int, error) {
 			return InvalidDatabase, errors.New("database version could not be retrieved")
 		}
 	} else {
-		return InvalidDatabase, errors.New("database info table missing - database might need to be initialized")
+		// Database just doesn't exist - so let's create it.
+		return UnpopulatedDatabase, nil
 	}
 
 }
@@ -151,58 +157,62 @@ func introspectDBVersion(db *sql.DB) (int, error) {
 	if schemaOrdinal, err := getDatabaseVersionFromDatabase(db); err != nil {
 		return InvalidDatabase, err
 	} else {
-		// Make sure it's a schema version we're aware of
-		if schemaOrdinal >= 0 && schemaOrdinal < len(expectedSchemas) {
+		if schemaOrdinal == UnpopulatedDatabase {
+			return schemaOrdinal, nil
+		} else {
+			// Make sure it's a schema version we're aware of
+			if schemaOrdinal >= 0 && schemaOrdinal < len(expectedSchemas) {
 
-			// Get the expected schema definitions for this version of the database
-			expectedSchema := expectedSchemas[schemaOrdinal]
+				// Get the expected schema definitions for this version of the database
+				expectedSchema := expectedSchemas[schemaOrdinal]
 
-			// Make the structure we'll save the fields we find in
-			actualSchema := make(schema)
+				// Make the structure we'll save the fields we find in
+				actualSchema := make(schema)
 
-			// Get the schema from the database information tables
-			sqlStatement := `SELECT table_name, column_name, data_type 
+				// Get the schema from the database information tables
+				sqlStatement := `SELECT table_name, column_name, data_type 
                            from information_schema.columns 
                           where table_name like 'jutzo%' 
                           order by table_name, column_name`
 
-			// Loop through all the information about the tables and build the actual
-			// schema from the information in the database
-			if rows, err := db.Query(sqlStatement); err == nil {
-				defer closeRows(rows)
-				for rows.Next() {
-					var tableName, columnName, dataType string
-					if err = rows.Scan(&tableName, &columnName, &dataType); err == nil {
-						if columns, ok := actualSchema[tableName]; ok {
-							actualSchema[tableName] = append(columns, columnDesc{columnName: dataType})
+				// Loop through all the information about the tables and build the actual
+				// schema from the information in the database
+				if rows, err := db.Query(sqlStatement); err == nil {
+					defer closeRows(rows)
+					for rows.Next() {
+						var tableName, columnName, dataType string
+						if err = rows.Scan(&tableName, &columnName, &dataType); err == nil {
+							if columns, ok := actualSchema[tableName]; ok {
+								actualSchema[tableName] = append(columns, columnDesc{columnName: dataType})
+							} else {
+								actualSchema[tableName] = []columnDesc{{columnName: dataType}}
+							}
 						} else {
-							actualSchema[tableName] = []columnDesc{{columnName: dataType}}
+							log.Printf("Error asking for schema structure: %s", err.Error())
+						}
+					}
+
+					// If we didn't get any errors iterating, then check to see if the
+					// schemas match
+					if rows.Err() == nil {
+						if reflect.DeepEqual(expectedSchema, actualSchema) {
+							log.Printf("Schema validated as ordinal %d", schemaOrdinal)
+							return schemaOrdinal, nil
+						} else {
+							return InvalidDatabase, errors.New(
+								fmt.Sprintf("schema does not match expectations for schema #%d", schemaOrdinal))
 						}
 					} else {
-						log.Printf("Error asking for schema structure: %s", err.Error())
-					}
-				}
-
-				// If we didn't get any errors iterating, then check to see if the
-				// schemas match
-				if rows.Err() == nil {
-					if reflect.DeepEqual(expectedSchema, actualSchema) {
-						log.Printf("Schema validated as ordinal %d", schemaOrdinal)
-						return schemaOrdinal, nil
-					} else {
 						return InvalidDatabase, errors.New(
-							fmt.Sprintf("schema does not match expectations for schema #%d", schemaOrdinal))
+							fmt.Sprintf("Error asking for schema structure: %s", rows.Err().Error()))
 					}
 				} else {
 					return InvalidDatabase, errors.New(
-						fmt.Sprintf("Error asking for schema structure: %s", rows.Err().Error()))
+						fmt.Sprintf("Error asking for schema structure: %s", err.Error()))
 				}
 			} else {
-				return InvalidDatabase, errors.New(
-					fmt.Sprintf("Error asking for schema structure: %s", err.Error()))
+				return InvalidDatabase, errors.New(fmt.Sprintf("schema %d is invalid", schemaOrdinal))
 			}
-		} else {
-			return InvalidDatabase, errors.New(fmt.Sprintf("schema %d is invalid", schemaOrdinal))
 		}
 	}
 }
