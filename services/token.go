@@ -15,7 +15,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"golang.org/x/exp/slices"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -58,6 +57,7 @@ func initToken() error {
 
 type UserSession struct {
 	User   string      `json:"user"`
+	ID     string      `json:"ID"`
 	Rights *UserRights `json:"rights"`
 }
 
@@ -68,24 +68,28 @@ type UserSessionCookieToken struct {
 	jwt.StandardClaims
 }
 
-// Creates a new JWT token for the user with the provided user rights
-func createToken(user string, rights *UserRights) (string, error) {
+// Destroys an existing user session
+func destroyUserSession(uniqueID string) error {
+	return redisClient.Del(context.Background(), uniqueID).Err()
+}
 
-	log.Printf("Creating user session")
+// Creates a new JWT token for the user with the provided user rights
+func createUserSession(user string, rights *UserRights) (string, error) {
 
 	// Create a new UserSession element with the rights provided
-	claims := UserSession{Rights: rights}
+	userSession := UserSession{Rights: rights}
 
 	// Create a new uuid to store that user session in the Redis cache with
 	if uniqueID, err := uuid.NewRandom(); err == nil {
 
-		// Store the claims
-		duration := time.Duration(8) * time.Hour
+		// Get the new UUID as a string; save to the user session
 		id := uniqueID.String()
+		userSession.ID = id
 
-		if marshalledSession, err := json.Marshal(claims); err == nil {
+		// Store the userSession
+		duration := time.Duration(8) * time.Hour
 
-			log.Printf("Getting ready to set the Redis user session")
+		if marshalledSession, err := json.Marshal(userSession); err == nil {
 			if err = redisClient.Set(context.Background(), id, marshalledSession, duration).Err(); err == nil {
 				cookie := UserSessionCookieToken{
 					ID: id,
@@ -102,11 +106,10 @@ func createToken(user string, rights *UserRights) (string, error) {
 				// Sign and get the complete encoded token as a string using the secret
 				return token.SignedString(jwtSecret)
 			} else {
-				log.Printf("Error storing token %s", err.Error())
 				return "", errors.New("unable to store session to Redis server")
 			}
 		} else {
-			return "", errors.New(fmt.Sprintf("could not marshal the claims: %s", err.Error()))
+			return "", errors.New(fmt.Sprintf("could not marshal the userSession: %s", err.Error()))
 		}
 	} else {
 		return "", errors.New("could not create unique Redis key")

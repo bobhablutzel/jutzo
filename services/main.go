@@ -50,8 +50,9 @@ func setupRouter(db *sql.DB) *gin.Engine {
 
 	// Define a group for endpoints that require authentication but no specific rights
 	authenticated := router.Group("/v1", requireValidJWTToken)
-	authenticated.GET("/user/getValidationLink/",
+	authenticated.GET("/user/getValidationLink",
 		func(c *gin.Context) { handleResendValidateEmailLink(c, db) })
+	authenticated.GET("/user/logoff", handleLogoff)
 
 	// Define a group for endpoints that require specific rights to access
 	granted := router.Group("/v1", requireGrants([]string{"admin"}))
@@ -129,9 +130,8 @@ func handleResendValidateEmailLink(c *gin.Context, db *sql.DB) {
 
 // Process a request to validate an email
 func handleValidateEmail(c *gin.Context, db *sql.DB) {
-	uuid := c.Param("key")
-	log.Printf("UUID: %s", uuid)
-	if validUUID, err := validateEmail(db, uuid); err == nil {
+	uniqueID := c.Param("key")
+	if validUUID, err := validateEmail(db, uniqueID); err == nil {
 		if !validUUID {
 			c.String(http.StatusBadRequest, "Invalid or expired validation request")
 		} else {
@@ -140,6 +140,23 @@ func handleValidateEmail(c *gin.Context, db *sql.DB) {
 		}
 	} else {
 		c.String(http.StatusInternalServerError, "Error processing validation: %s", err.Error())
+	}
+}
+
+// Routine to log the user off, destroying the session token
+func handleLogoff(c *gin.Context) {
+
+	// Attempt to logoff the user
+	if userSession, ok := getUserSessionFromContext(c); ok {
+		if err := destroyUserSession(userSession.ID); err == nil {
+			c.String(http.StatusOK, "OK")
+		} else {
+			c.String(http.StatusInternalServerError, "Error logging off")
+		}
+	} else {
+		// User isn't authorized, and wants to logoff. Is this an
+		// error or not? We decide it is
+		c.String(http.StatusUnauthorized, "Invalid session")
 	}
 }
 
