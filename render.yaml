@@ -1,0 +1,50 @@
+services:
+# The API / backend services go application
+  - type: web
+    name: app-backend
+    env: go
+    rootDir: services
+    plan: starter
+    buildCommand: go build -o app .
+    startCommand: ./app --initDB --force
+    domains: [api.hablutzel.com]
+    envVars:
+      - key: JUTZO_DB_URL
+        fromDatabase:
+          name: jutzoDB
+          property: connectionString
+      - key: JUTZO_JWT_SECRET
+        value: 61eaad6a2a796dccf0869b21b06d3899a7b45c8925992521e6a7f2de168859db40ade1a42cde78732210bb726e447158e92293d959f01bc60d2508c5f85feb20
+      - key: JUTZO_REDIS_URL
+        fromService:
+          type: redis
+          name: sessionCache
+          property: connectionString
+      - key: JUTZO_SERVER_PORT
+        value: 8080
+      - key: GIN_MODE
+        value: release
+
+# Used to cache session cookies
+  - type: redis
+    name: sessionCache
+    ipAllowList: [] # No external connections
+    plan: free # optional (defaults to starter)
+# The VUE3 static site
+  - type: web
+    name: front-end
+    env: static
+    rootDir: static
+    buildCommand: npm run build
+    staticPublishPath: dist
+    domains: [hablutzel.com]
+    envVars:
+      - key: VUE_APP_API_URL
+        value: https://api.hablutzel.com/
+databases:
+  - name: jutzoDB
+    plan: starter
+    databaseName: jutzo
+    user: jutzo
+    ipAllowList: [] # No external connections
+    postgresMajorVersion: 14
