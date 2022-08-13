@@ -196,10 +196,10 @@ func validateEmail(db *sql.DB, uuid string) (bool, error) {
 // Routine to validate that the password provided in clear text matches
 // the hashed password in the database
 func login(db *sql.DB, user string, password string) (string, error) {
-	log.Printf("Checling for %s %s", user, password)
+	log.Printf("Checking for user %s", user)
 
 	// Get the password hash for the user
-	row := db.QueryRow("select password_hash, email_validated, Rights from jutzo_registered_user where username = $1", user)
+	row := db.QueryRow("select password_hash, email_validated, rights from jutzo_registered_user where username = $1", user)
 
 	var passwordHash []byte
 	var emailValidated bool

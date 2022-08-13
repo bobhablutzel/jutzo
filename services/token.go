@@ -15,6 +15,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"golang.org/x/exp/slices"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -74,6 +75,8 @@ type UserSessionCookieToken struct {
 // Creates a new JWT token for the user with the provided user rights
 func createToken(user string, rights *UserRights) (string, error) {
 
+	log.Printf("Creating user session")
+
 	// Create a new UserSession element with the rights provided
 	claims := UserSession{Rights: rights}
 
@@ -85,6 +88,8 @@ func createToken(user string, rights *UserRights) (string, error) {
 		id := uniqueID.String()
 
 		if marshalledSession, err := json.Marshal(claims); err == nil {
+
+			log.Printf("Getting ready to set the Redis user session")
 			if err = redisClient.Set(context.Background(), id, marshalledSession, duration).Err(); err == nil {
 				cookie := UserSessionCookieToken{
 					ID: id,
@@ -101,6 +106,7 @@ func createToken(user string, rights *UserRights) (string, error) {
 				// Sign and get the complete encoded token as a string using the secret
 				return token.SignedString(jwtSecret)
 			} else {
+				log.Printf("Error storing token %s", err.Error())
 				return "", errors.New("unable to store session to Redis server")
 			}
 		} else {
