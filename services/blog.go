@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"log"
 	"net/http"
 	"time"
 )
@@ -107,6 +108,7 @@ var blog2 = BlogEntry{
 var blogs = []BlogEntry{blog1, blog2}
 
 func newest(c *gin.Context) {
+	log.Println("In newest function")
 	var newestBlogs []BlogSummary
 	for _, element := range blogs {
 		newestBlogs = append(newestBlogs, element.BlogSummary)
@@ -116,13 +118,13 @@ func newest(c *gin.Context) {
 
 func blogEntry(c *gin.Context) {
 	id := c.Params.ByName("id")
-	uuid, e := uuid.Parse(id)
+	uniqueID, e := uuid.Parse(id)
 	if e != nil {
 		c.JSON(http.StatusBadRequest, ErrorMessage{"Invalid UUID"})
 	} else {
 		found := false
 		for _, element := range blogs {
-			if element.ID == uuid {
+			if element.ID == uniqueID {
 				c.JSON(http.StatusOK, element)
 				found = true
 			}
