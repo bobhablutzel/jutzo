@@ -6,7 +6,8 @@ services:
     rootDir: services
     plan: starter
     buildCommand: go build -o app .
-    startCommand: ./app --initDB
+    startCommand: ./app --initDB --force
+    domains: [api.hablutzel.com]
     envVars:
       - key: JUTZO_DB_URL
         fromDatabase:
