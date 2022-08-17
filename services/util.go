@@ -18,10 +18,11 @@ func checkValidPayload(c *gin.Context, err error) bool {
 	}
 }
 
-// Use the GIN context to create a link back to the service that we're running
+// Use the GIN context to create a link back to the service that we are running
 func createHATEOASURL(c *gin.Context, format string, args ...any) string {
 
-	// Determine HTTP or HTTPS
+	// Determine HTTP or HTTPS. We check to see if we're in production - if we
+	// we use https
 	scheme := ""
 	if os.Getenv("GIN_MODE") == "release" {
 		scheme = "s"
