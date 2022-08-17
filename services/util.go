@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 // Make sure that the payload provided by the user matches the expected JSON payload
@@ -22,7 +23,7 @@ func createHATEOASURL(c *gin.Context, format string, args ...any) string {
 
 	// Determine HTTP or HTTPS
 	scheme := ""
-	if c.Request.TLS != nil {
+	if os.Getenv("GIN_MODE") == "release" {
 		scheme = "s"
 	}
 
