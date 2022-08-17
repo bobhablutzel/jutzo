@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+const ValidationLinkTemplate = "/v1/user/validateEmail/%s"
+
 // Routine to set up the GIN router. This
 // both creates the router, configures it, and
 // defines the endpoints that we support.
@@ -175,8 +177,8 @@ func handleRegisterUser(c *gin.Context, engine jutzo.Engine) {
 			case jutzo.Success:
 				{
 					// Successfully inserted, create the email verification url
-					if uuid, _, err := engine.CreateUniqueValidationForUser(payload.User); err == nil {
-						c.String(http.StatusOK, createHATEOASURL(c, "/v1/user/validateEmail/%s", uuid))
+					if uniqueID, _, err := engine.CreateUniqueValidationForUser(payload.User); err == nil {
+						c.String(http.StatusOK, createHATEOASURL(c, ValidationLinkTemplate, uniqueID))
 					} else {
 						c.String(http.StatusInternalServerError, "User inserted; error creating validation uuid")
 					}
@@ -203,8 +205,8 @@ func handleRegisterUser(c *gin.Context, engine jutzo.Engine) {
 // in order to ensure that the user is logged in
 func handleResendValidateEmailLink(c *gin.Context, engine jutzo.Engine) {
 	if userSession, ok := getUserSessionFromContext(c); ok {
-		if uuid, _, err := engine.CreateUniqueValidationForUser(userSession.GetUserInfo().GetUsername()); err == nil {
-			c.String(http.StatusOK, createHATEOASURL(c, "/v1/userSession/validateEmail/%s ", uuid))
+		if uniqueID, _, err := engine.CreateUniqueValidationForUser(userSession.GetUserInfo().GetUsername()); err == nil {
+			c.String(http.StatusOK, createHATEOASURL(c, ValidationLinkTemplate, uniqueID))
 		} else {
 			c.String(http.StatusInternalServerError, "Error getting validation uuid: %s", err.Error())
 		}
