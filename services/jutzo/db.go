@@ -21,7 +21,7 @@ type DatabaseConnection interface {
 	CheckForUsernameOrEmail(username string, email string) (userExists bool, emailExists bool, err error)
 
 	// StoreUser in the database with the given username, email and password hash
-	StoreUser(username string, email string, passwordCost int, passwordHash []byte) (UserInfo, error)
+	StoreUser(username string, email string, passwordHash []byte) (UserInfo, error)
 
 	// UpdateUserInfo that has changed with what is stored in the database
 	UpdateUserInfo(userInfo UserInfo) error

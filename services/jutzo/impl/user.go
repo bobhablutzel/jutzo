@@ -10,18 +10,16 @@ type UserInfoImpl struct {
 	Username       string    `json:"username"`
 	Email          string    `json:"email"`
 	PasswordHash   []byte    `json:"passwordHash"`
-	PasswordCost   int       `json:"passwordCost"`
 	EmailValidated bool      `json:"emailValidated"`
 	Rights         []string  `json:"rights"`
 	CreationTime   time.Time `json:"creationTime"`
 }
 
-func NewUserInfo(username string, email string, passwordHash []byte, passwordCost int, emailValidated bool, rights []string, creationTime time.Time) jutzo.UserInfo {
+func NewUserInfo(username string, email string, passwordHash []byte, emailValidated bool, rights []string, creationTime time.Time) jutzo.UserInfo {
 	result := new(UserInfoImpl)
 	result.Username = username
 	result.Email = email
 	result.PasswordHash = passwordHash
-	result.PasswordCost = passwordCost
 	result.EmailValidated = emailValidated
 	result.Rights = rights
 	result.CreationTime = creationTime
@@ -41,11 +39,6 @@ func (userInfo *UserInfoImpl) GetEmail() string {
 // GetPasswordHash associated with this user
 func (userInfo *UserInfoImpl) GetPasswordHash() []byte {
 	return userInfo.PasswordHash
-}
-
-// GetPasswordCost associated with this user
-func (userInfo *UserInfoImpl) GetPasswordCost() int {
-	return userInfo.PasswordCost
 }
 
 // IsEmailValidated for this user

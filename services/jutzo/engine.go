@@ -53,10 +53,4 @@ type Engine interface {
 
 	// GetConfigProvider that was used to create the engine
 	GetConfigProvider() ConfigurationProvider
-
-	// GetDatabase that was used to create the engine
-	GetDatabase() DatabaseConnection
-
-	// GetUserSessionCache that was used to create the engine
-	GetUserSessionCache() UserSessionCache
 }

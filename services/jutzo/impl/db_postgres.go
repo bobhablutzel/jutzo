@@ -40,7 +40,6 @@ var UpgradeStatements = [...][]string{
 			email           varchar(256)            not null,
 			email_validated boolean   default false not null,
 			creation_time   timestamp default now() not null,
-			password_cost   integer                 not null,
 			password_hash   bytea                   not null,
 			rights          text      default 'blog,login'::text
 			)`,
@@ -157,6 +156,8 @@ func (connection *PostgresConnection) doesInfoTableExist() bool {
 	switch err := row.Scan(&dataType); err {
 	case nil:
 		return dataType == "integer"
+	case sql.ErrNoRows:
+		return false
 	default:
 		log.Printf("Error validating information table in DB: %s", err.Error())
 		return false
@@ -211,17 +212,17 @@ func (connection *PostgresConnection) CheckForUsernameOrEmail(username string, e
 // StoreUser in the database with the given username, email and password hash. This
 // routine will return an error if either the email or username are already in the
 // database, so checking first with CheckForUsernameOrEmail is a good idea
-func (connection *PostgresConnection) StoreUser(username string, email string, passwordCost int, passwordHash []byte) (jutzo.UserInfo, error) {
+func (connection *PostgresConnection) StoreUser(username string, email string, passwordHash []byte) (jutzo.UserInfo, error) {
 	statement := `insert into jutzo_registered_user
-                              (username, email, password_cost, password_hash)
-                       values ($1, $2, $3, $4)
+                              (username, email,password_hash)
+                       values ($1, $2, $3)
                      returning rights, creation_time`
 
-	row := connection.db.QueryRow(statement, username, email, passwordCost, passwordHash)
+	row := connection.db.QueryRow(statement, username, email, passwordHash)
 	var rightsString string
 	var creationTime time.Time
 	if err := row.Scan(&rightsString, &creationTime); err == nil {
-		return NewUserInfo(username, email, passwordHash, passwordCost, false, strings.Split(rightsString, ","), creationTime), err
+		return NewUserInfo(username, email, passwordHash, false, strings.Split(rightsString, ","), creationTime), err
 	} else {
 		return nil, err
 	}
@@ -247,7 +248,7 @@ func (connection *PostgresConnection) UpdateUserInfo(userInfo jutzo.UserInfo) er
 // be validated
 func (connection *PostgresConnection) RetrieveUserInformation(username string) (jutzo.UserInfo, error) {
 	statement := `SELECT email, email_validated, creation_time, 
-                            password_cost, password_hash, email_validated, rights 
+                            password_hash, email_validated, rights 
                        from jutzo_registered_user
                       where username = $1`
 	row := connection.db.QueryRow(statement, username)
@@ -255,14 +256,13 @@ func (connection *PostgresConnection) RetrieveUserInformation(username string) (
 	var email string
 	var emailValidated bool
 	var creationTime time.Time
-	var passwordCost int
 	var passwordHash []byte
 	var rightsString string
-	if err := row.Scan(&email, &emailValidated, &creationTime, &passwordCost, &passwordHash, &emailValidated, &rightsString); err != nil {
+	if err := row.Scan(&email, &emailValidated, &creationTime, &passwordHash, &emailValidated, &rightsString); err != nil {
 		return nil, err
 	} else {
 		// Build and return the user info
-		return NewUserInfo(username, email, passwordHash, passwordCost, emailValidated, strings.Split(rightsString, ","), creationTime), nil
+		return NewUserInfo(username, email, passwordHash, emailValidated, strings.Split(rightsString, ","), creationTime), nil
 	}
 }
 
@@ -321,8 +321,7 @@ func (connection *PostgresConnection) CompleteValidationFor(uniqueID string) err
 // The first user returned will be the first user AFTER the one specified, so duplicate records
 // will not occur. If no more users can be found, a nil slice will be returned with no error
 func (connection *PostgresConnection) ListUsers(startingAt string, maxUsers int) ([]jutzo.UserInfo, error) {
-	sqlStatement := `SELECT username, email, email_validated, creation_time, 
-                            password_cost, password_hash, email_validated, rights
+	sqlStatement := `SELECT username, email, email_validated, creation_time, email_validated, rights
                        from jutzo_registered_user
                        where username > $1
                        order by username
@@ -346,14 +345,12 @@ func (connection *PostgresConnection) ListUsers(startingAt string, maxUsers int)
 			var email string
 			var emailValidated bool
 			var creationTime time.Time
-			var passwordCost int
-			var passwordHash []byte
 			var rightsString string
 
-			if err := rows.Scan(&username, &email, &emailValidated, &creationTime, &passwordCost, &passwordHash, &emailValidated, &rightsString); err != nil {
+			if err := rows.Scan(&username, &email, &emailValidated, &creationTime, &emailValidated, &rightsString); err != nil {
 				return nil, err
 			} else {
-				result = append(result, NewUserInfo(username, email, passwordHash, passwordCost,
+				result = append(result, NewUserInfo(username, email, []byte{},
 					emailValidated, strings.Split(rightsString, ","), creationTime))
 			}
 		}

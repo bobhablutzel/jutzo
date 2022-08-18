@@ -66,6 +66,8 @@ func NewJutzoEngine(config jutzo.ConfigurationProvider, connection jutzo.Databas
 
 					}
 				}
+			} else {
+				return nil, errors.New("no administrator found, and missing configuration to create one")
 			}
 		}
 	}
@@ -143,7 +145,7 @@ func (engine *EngineImpl) RegisterUser(user string, password string, email strin
 			} else {
 
 				// Store the user
-				if userInfo, err := engine.db.StoreUser(user, email, passwordCost, passwordHash); err != nil {
+				if userInfo, err := engine.db.StoreUser(user, email, passwordHash); err != nil {
 					return 0, nil, err
 				} else {
 					return jutzo.Success, userInfo, nil

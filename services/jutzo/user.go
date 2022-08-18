@@ -15,9 +15,6 @@ type UserInfo interface {
 	// GetPasswordHash associated with this user
 	GetPasswordHash() []byte
 
-	// GetPasswordCost associated with this user
-	GetPasswordCost() int
-
 	// IsEmailValidated for this user
 	IsEmailValidated() bool
 
