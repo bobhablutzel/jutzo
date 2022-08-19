@@ -130,8 +130,8 @@ func TestConnectingToEmptyDB(t *testing.T) {
 		// Define the expected results
 		expectedResults := []map[string]string{
 			{"table_name": "jutzo_database_info", "column_name": "schema_ordinal", "data_type": "integer"},
+			{"table_name": "jutzo_pending_validation", "column_name": "unique_id", "data_type": "uuid"},
 			{"table_name": "jutzo_pending_validation", "column_name": "username", "data_type": "character varying"},
-			{"table_name": "jutzo_pending_validation", "column_name": "uuid", "data_type": "uuid"},
 			{"table_name": "jutzo_registered_user", "column_name": "creation_time", "data_type": "timestamp without time zone"},
 			{"table_name": "jutzo_registered_user", "column_name": "email", "data_type": "character varying"},
 			{"table_name": "jutzo_registered_user", "column_name": "email_validated", "data_type": "boolean"},

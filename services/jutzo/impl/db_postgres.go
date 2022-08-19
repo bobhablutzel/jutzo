@@ -46,7 +46,7 @@ var UpgradeStatements = [...][]string{
 		`alter table jutzo_registered_user owner to jutzo`,
 		`create table if not exists jutzo_pending_validation
 			(
-			uuid     uuid default gen_random_uuid() not null
+			unique_id     uuid default gen_random_uuid() not null
 				constraint uuid_key
 				primary key,
 			username varchar(256)                   not null
@@ -273,7 +273,7 @@ func (connection *PostgresConnection) CreateValidationFor(username string) (uniq
 	deleteStatement := `delete from jutzo_pending_validation where username = $1`
 	insertStatement := `insert into jutzo_pending_validation (username) 
                              values ($1) 
-                          returning uuid, (select email 
+                          returning unique_id, (select email 
                                              from jutzo_registered_user 
                                             where jutzo_registered_user.username = $1)`
 
@@ -300,8 +300,8 @@ func (connection *PostgresConnection) CompleteValidationFor(uniqueID string) err
 
 	db := connection.db
 	updateStatement := `update jutzo_registered_user set email_validated = true where username = 
-                               (select username from jutzo_pending_validation where uuid = $1)`
-	deleteStatement := `delete from jutzo_pending_validation where uuid = $1`
+                               (select username from jutzo_pending_validation where unique_id = $1)`
+	deleteStatement := `delete from jutzo_pending_validation where unique_id = $1`
 
 	// Mark the user's email as valid based on the unique ID provided
 	if _, err := db.Exec(updateStatement, uniqueID); err == nil {
